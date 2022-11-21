@@ -6,7 +6,7 @@ class Joueur(pygame.sprite.Sprite):
     def __init__(self, position):
         #constructeur prenant en argument la position du joueur
         super().__init__()   #Je sais pas a quoi ca sert mais pygame en a besoin pour charger le sprite
-        self.sprite_sheet = pygame.image.load("./Joueur/MainPlayer.png")   #On indique le chemin de l'image a charger
+        self.sprite_sheet = pygame.image.load("./Sprites/MainPlayer.png")   #On indique le chemin de l'image a charger
         self.sprite_sheet = pygame.transform.scale(self.sprite_sheet, (48, 68))   #On redimensionne l'image
         self.image = self.get_image(0, 0)
         self.image.set_colorkey((0, 0, 0))    #On enleve le fond noir de l'image

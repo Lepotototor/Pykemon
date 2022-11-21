@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="70" height="40" tilewidth="12" tileheight="12" infinite="0" nextlayerid="14" nextobjectid="233">
- <tileset firstgid="1" source="assets/Pokemon Style Game.tsx"/>
+ <tileset firstgid="1" source="Assets Tiled/Pokemon Style Game.tsx"/>
  <layer id="1" name="Water" width="70" height="40" locked="1">
   <data encoding="csv">
 439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,440,441,439,
