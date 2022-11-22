@@ -3,6 +3,7 @@ import pytmx
 import pyscroll
 
 from joueur import Joueur
+from map import Map
 
 
 
@@ -16,27 +17,17 @@ class Jeux:
         # Variable de boucle
         self.jeu_encours = True
 
-        #Permet de charger la carte
-        maptmx = pytmx.util_pygame.load_pygame("map.tmx")   #On va chercher le fichier
-        mapdata = pyscroll.data.TiledMapData(maptmx)
-        maplayer = pyscroll.orthographic.BufferedRenderer(mapdata, self.fenetre.get_size())
-        maplayer.zoom = 3   #On defini un zoom
 
-        # Dessine les calques permettant d'afficher la carte
-        self.calques = pyscroll.PyscrollGroup(map_layer = maplayer, default_layer=12)
+        #On charge la map
+        self.map = Map("map.tmx", 12, self.fenetre)
+        self.map.charger_collisions()
 
         #On charge les données du joueur
-        position_joueur = maptmx.get_object_by_name("départ_joueur")
+        position_joueur = self.map.maptmx.get_object_by_name("départ_joueur")
         self.joueur = Joueur([position_joueur.x, position_joueur.y])
-        self.calques.add(self.joueur)
+        self.map.calques.add(self.joueur)
 
-        #On importe les zones de collision
-        self.collisions = []
-        #print(maptmx.objects)
-        for objet in maptmx.objects:
-            if objet.name == "collision":
-                self.collisions.append(pygame.Rect(objet.x, objet.y, objet.width, objet.height))
-        #print(self.collisions)
+
 
 
     def entrees_clavier(self):
@@ -76,6 +67,15 @@ class Jeux:
             self.joueur.gauche()
         elif pressé[pygame.K_RIGHT]:
             self.joueur.droite()
+        elif pressé[pygame.K_a]:
+            #On charge la map
+            self.map = Map("map_losange.tmx", 12, self.fenetre)
+            self.map.charger_collisions()
+
+            #On charge les données du joueur
+            position_joueur = self.map.maptmx.get_object_by_name("départ_joueur")
+            self.joueur = Joueur([position_joueur.x, position_joueur.y])
+            self.map.calques.add(self.joueur)
 
 
         self.joueur.image.set_colorkey((0, 0, 0))    #On enleve le fond noir de l'image
@@ -87,18 +87,24 @@ class Jeux:
         si le joueur est sur une zone de collision on le remet a une position ou
         il n'etait pas sur une collision
         """
-        self.calques.update()
+        self.map.calques.update()
 
-        for sprite in self.calques.sprites():
-            if sprite.bas_du_joueur.collidelist(self.collisions) > -1:
+        for sprite in self.map.calques.sprites():
+            if sprite.bas_du_joueur.collidelist(self.map.collisions) > -1:
                 sprite.retour_arrriere()
 
 
     def run(self):
-        clock = pygame.time.Clock()  #permet de gerer les fps
+
+        # Mise en place de la 'clock' qui va s'occuper d'es frames par seconde
+        clock = pygame.time.Clock()
+        FPS = 250
 
         #creation de la boucle de jeu
         while self.jeu_encours:
+
+            clock.tick(FPS)
+            #FPS = clock.get_fps()
 
             #On enregistre la position du joueur au cas ou il irait sur une zone de collision
             self.joueur.position_avant()
@@ -110,10 +116,10 @@ class Jeux:
             self.detecte_collision()
 
             #On actualise la position du joueur
-            self.calques.center(self.joueur.rect)   #On centre la fenetre de jeu autour du joueur
+            self.map.calques.center(self.joueur.rect)   #On centre la fenetre de jeu autour du joueur
 
             # Dessine la carte
-            self.calques.draw(self.fenetre)
+            self.map.calques.draw(self.fenetre)
             pygame.display.flip()   # Permet de rafraichir
 
             for event in pygame.event.get():
@@ -121,6 +127,5 @@ class Jeux:
                 if event.type == pygame.QUIT:
                     self.jeu_encours = False
 
-        clock.tick(120)
 
         pygame.quit()
