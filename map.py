@@ -29,3 +29,11 @@ class Map:
             if objet.name == "collision":
                 self.collisions.append(pygame.Rect(objet.x, objet.y, objet.width, objet.height))
         #print(self.collisions)
+
+    def charger_teleportation(self):
+        self.teleportations = []
+        print(self.maptmx.get_object_by_class("collision"))
+        for objet in self.maptmx.objects:
+            #print(objet)
+            if objet.name == 'téléportation':
+                print(objet)

@@ -21,6 +21,7 @@ class Jeux:
         #On charge la map
         self.map = Map("map.tmx", 12, self.fenetre)
         self.map.charger_collisions()
+        self.map.charger_teleportation()
 
         #On charge les données du joueur
         position_joueur = self.map.maptmx.get_object_by_name("départ_joueur")
