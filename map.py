@@ -21,6 +21,10 @@ class Map:
         self.calques = pyscroll.PyscrollGroup(map_layer = self.maplayer, default_layer = self.layer)
 
 
+    def get_map(self):
+        return self.chemin
+
+
     def charger_collisions(self):
         #On importe les zones de collision
         self.collisions = []
@@ -28,12 +32,17 @@ class Map:
         for objet in self.maptmx.objects:
             if objet.name == "collision":
                 self.collisions.append(pygame.Rect(objet.x, objet.y, objet.width, objet.height))
-        #print(self.collisions)
 
-    def charger_teleportation(self):
-        self.teleportations = []
-        print(self.maptmx.get_object_by_class("collision"))
-        for objet in self.maptmx.objects:
-            #print(objet)
-            if objet.name == 'téléportation':
-                print(objet)
+        return self.collisions
+
+
+    def charger_teleportation(self, dico_maps):
+        self.teleportations = {}
+        tp_map = dico_maps[self.chemin]
+        for point_tp in tp_map.keys():
+            print(point_tp)
+            objet = self.maptmx.get_object_by_name(point_tp)
+            self.teleportations[point_tp] = pygame.Rect(objet.x, objet.y, objet.width, objet.height)
+            print(self.teleportations)
+
+        return self.teleportations

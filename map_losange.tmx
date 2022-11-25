@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="12" tileheight="12" infinite="0" nextlayerid="14" nextobjectid="174">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="12" tileheight="12" infinite="0" nextlayerid="14" nextobjectid="177">
  <tileset firstgid="1" source="Assets Tiled/Pokemon Style Game.tsx"/>
  <layer id="3" name="water " width="50" height="50">
   <data encoding="csv">
@@ -579,8 +579,9 @@
   <object id="173" name="collision" class="collision" x="684" y="626" width="3" height="2"/>
  </objectgroup>
  <objectgroup id="12" name="start">
-  <object id="55" name="départ_joueur" x="544.333" y="256.667">
+  <object id="174" name="depuis_map" x="414.054" y="159.574">
    <point/>
   </object>
+  <object id="176" name="map" x="567.333" y="242.333" width="11.6667" height="34"/>
  </objectgroup>
 </map>

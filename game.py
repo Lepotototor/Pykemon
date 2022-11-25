@@ -1,10 +1,12 @@
-import pygame , sys 
+import pygame , sys
 import pytmx
 import pyscroll
-from button import Button
 
+from button import Button
 from joueur import Joueur
 from map import Map
+from teleportation import Teleportation
+
 
 def get_font(size): # Returns Press-Start-2P in the desired size
             return pygame.font.Font("assets/font.ttf", size)
@@ -20,16 +22,11 @@ class Jeux:
         # Variable de boucle
         self.jeu_encours = True
 
+        #On importe tous les points de téléportation
+        self.teleportations = Teleportation().get_dico_tp()
 
-        #On charge la map
-        self.map = Map("map.tmx", 12, self.fenetre)
-        self.map.charger_collisions()
-        self.map.charger_teleportation()
+        self.changement_map(self.teleportations["start"]["map"])
 
-        #On charge les données du joueur
-        position_joueur = self.map.maptmx.get_object_by_name("départ_joueur")
-        self.joueur = Joueur([position_joueur.x, position_joueur.y])
-        self.map.calques.add(self.joueur)
 
 
 
@@ -94,16 +91,42 @@ class Jeux:
         self.map.calques.update()
 
         for sprite in self.map.calques.sprites():
-            if sprite.bas_du_joueur.collidelist(self.map.collisions) > -1:
+            #print(self.collisions)
+            teleport = [tp for tp in self.teleportations.values()]
+            #print(teleport)
+            if sprite.bas_du_joueur.collidelist(self.collisions) > -1:
                 sprite.retour_arrriere()
-                
+            elif sprite.bas_du_joueur.collidelist(teleport) > -1:
+                print(sprite)
+                self.changement_map(cle(teleport, ))
+
+
+    def changement_map(self, portail):
+
+        #On charge les données utiles
+        nv_monde = portail["monde_arr"]
+        pos_joueur = portail["pos_arr"]
+
+        #On charge la map et ses données relatives
+        self.map = Map(nv_monde, 12, self.fenetre)
+        self.map_affichee = self.map.get_map()
+        self.collisions = self.map.charger_collisions()
+        self.teleportations = self.map.charger_teleportation(self.teleportations)
+
+        #On charge les données du joueur
+        position_joueur = self.map.maptmx.get_object_by_name(pos_joueur)
+        self.joueur = Joueur([position_joueur.x, position_joueur.y])
+        self.map.calques.add(self.joueur)
+
+
+
     def main_menu():
         SCREEN = pygame.display.set_mode((1280, 720))
         pygame.display.set_caption("Menu")
 
         BG = pygame.image.load("assets/Background.png")
-        
-        
+
+
         while True:
             SCREEN.blit(BG, (0, 0))
 
@@ -112,11 +135,11 @@ class Jeux:
             MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
             MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
-            PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), 
+            PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250),
                                 text_input="PLAY",  font=get_font(75),base_color="#d7fcd4", hovering_color="White")
-            OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400), 
+            OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400),
                                 text_input="OPTIONS", font=get_font(75),base_color="#d7fcd4", hovering_color="White")
-            QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), 
+            QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550),
                                 text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
 
             SCREEN.blit(MENU_TEXT, MENU_RECT)
@@ -124,7 +147,7 @@ class Jeux:
             for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
                 button.changeColor(MENU_MOUSE_POS)
                 button.update(SCREEN)
-            
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -176,3 +199,9 @@ class Jeux:
 
 
         pygame.quit()
+
+
+def cle(dict, valeur):
+    for cle,val in dict.items():
+        if val == valeur:
+            return cle
