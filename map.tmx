@@ -402,7 +402,7 @@
    <point/>
   </object>
   <object id="233" name="maison_1" x="399.818" y="65.4545" width="15.8182" height="11.8182"/>
-  <object id="234" name="depuis_losange" x="671.636" y="147.091">
+  <object id="234" name="depuis_losange" x="663.621" y="141.459">
    <point/>
   </object>
  </objectgroup>

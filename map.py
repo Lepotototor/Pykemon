@@ -21,8 +21,11 @@ class Map:
         self.calques = pyscroll.PyscrollGroup(map_layer = self.maplayer, default_layer = self.layer)
 
 
-    def get_map(self):
+    def get_map_name(self):
         return self.chemin
+
+    def get_map(self):
+        return self.maptmx
 
 
     def charger_collisions(self):
