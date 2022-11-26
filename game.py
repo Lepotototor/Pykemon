@@ -88,20 +88,35 @@ class Jeux:
         si le joueur est sur une zone de collision on le remet a une position ou
         il n'etait pas sur une collision
         """
-        self.map.calques.update()
 
         for sprite in self.map.calques.sprites():
-            #print(self.collisions)
-            teleport = [tp for tp in self.teleportations.values()]
-            #print(teleport)
+            print(sprite)
+            print("\n\n\n")
             if sprite.bas_du_joueur.collidelist(self.collisions) > -1:
                 sprite.retour_arrriere()
-            elif sprite.bas_du_joueur.collidelist(teleport) > -1:
-                print(sprite)
-                self.changement_map(cle(teleport, ))
+
+
+
+    def detecte_teleportation(self):
+        """
+        Permet de détecter si le joueur entre en collision avec une zone de téléportation
+        """
+        map_name = self.map.get_map_name()
+
+        for sprite in self.map.calques.sprites():
+            tp_map = self.teleportations[map_name]
+
+            for point_tp in tp_map.keys():
+                objet = self.map.get_map().get_object_by_name(point_tp)
+                teleport = [pygame.Rect(objet.x, objet.y, objet.width, objet.height)]
+
+                if sprite.bas_du_joueur.collidelist(teleport) > -1:
+                    print(sprite)
+                    self.changement_map(self.teleportations[map_name][point_tp])
 
 
     def changement_map(self, portail):
+        print(portail)
 
         #On charge les données utiles
         nv_monde = portail["monde_arr"]
@@ -109,9 +124,8 @@ class Jeux:
 
         #On charge la map et ses données relatives
         self.map = Map(nv_monde, 12, self.fenetre)
-        self.map_affichee = self.map.get_map()
         self.collisions = self.map.charger_collisions()
-        self.teleportations = self.map.charger_teleportation(self.teleportations)
+        #self.teleportations = self.map.charger_teleportation(self.teleportations)
 
         #On charge les données du joueur
         position_joueur = self.map.maptmx.get_object_by_name(pos_joueur)
@@ -182,8 +196,12 @@ class Jeux:
             # On verifie si il y a une entrée de la part du joueur
             self.entrees_clavier()
 
+            #On met a jour les calques de la map
+            self.map.calques.update()
+
             #On remmet le joueur la ou il etait si il est sur une zone de collisions
             self.detecte_collision()
+            self.detecte_teleportation()
 
             #On actualise la position du joueur
             self.map.calques.center(self.joueur.rect)   #On centre la fenetre de jeu autour du joueur
