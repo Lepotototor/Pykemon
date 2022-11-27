@@ -16,7 +16,7 @@ class Jeux:
 
     def __init__(self):
         #constructeur
-        self.fenetre = pygame.display.set_mode((800, 600))   #On defini la fenetre
+        self.fenetre = pygame.display.set_mode((1000, 700))   #On defini la fenetre
         pygame.display.set_caption("Pykemon")   #Avec son titre
 
         # Variable de boucle
@@ -68,16 +68,6 @@ class Jeux:
             self.joueur.gauche()
         elif pressé[pygame.K_RIGHT]:
             self.joueur.droite()
-        elif pressé[pygame.K_a]:
-            #On charge la map
-            self.map = Map("map_losange.tmx", 12, self.fenetre)
-            self.map.charger_collisions()
-
-            #On charge les données du joueur
-            position_joueur = self.map.maptmx.get_object_by_name("départ_joueur")
-            self.joueur = Joueur([position_joueur.x, position_joueur.y])
-            self.map.calques.add(self.joueur)
-
 
         self.joueur.image.set_colorkey((0, 0, 0))    #On enleve le fond noir de l'image
 
@@ -89,11 +79,10 @@ class Jeux:
         il n'etait pas sur une collision
         """
 
-        for sprite in self.map.calques.sprites():
-            print(sprite)
-            print("\n\n\n")
-            if sprite.bas_du_joueur.collidelist(self.collisions) > -1:
-                sprite.retour_arrriere()
+        sprite = self.map.calques.sprites()[0]
+        #print(sprite.bas_du_joueur.collidelist(self.collisions))
+        if sprite.bas_du_joueur.collidelist(self.collisions) != -1:
+            sprite.retour_arrriere()
 
 
 
@@ -103,21 +92,18 @@ class Jeux:
         """
         map_name = self.map.get_map_name()
 
-        for sprite in self.map.calques.sprites():
-            tp_map = self.teleportations[map_name]
+        sprite = self.map.calques.sprites()[0]
+        tp_map = self.teleportations[map_name]
 
-            for point_tp in tp_map.keys():
-                objet = self.map.get_map().get_object_by_name(point_tp)
-                teleport = [pygame.Rect(objet.x, objet.y, objet.width, objet.height)]
+        for point_tp in tp_map.keys():
+            objet = self.map.get_map().get_object_by_name(point_tp)
+            teleport = [pygame.Rect(objet.x, objet.y, objet.width, objet.height)]
 
-                if sprite.bas_du_joueur.collidelist(teleport) > -1:
-                    print(sprite)
-                    self.changement_map(self.teleportations[map_name][point_tp])
+            if sprite.bas_du_joueur.collidelist(teleport) != -1:
+                self.changement_map(self.teleportations[map_name][point_tp])
 
 
     def changement_map(self, portail):
-        print(portail)
-
         #On charge les données utiles
         nv_monde = portail["monde_arr"]
         pos_joueur = portail["pos_arr"]
@@ -125,7 +111,6 @@ class Jeux:
         #On charge la map et ses données relatives
         self.map = Map(nv_monde, 12, self.fenetre)
         self.collisions = self.map.charger_collisions()
-        #self.teleportations = self.map.charger_teleportation(self.teleportations)
 
         #On charge les données du joueur
         position_joueur = self.map.maptmx.get_object_by_name(pos_joueur)
@@ -200,8 +185,8 @@ class Jeux:
             self.map.calques.update()
 
             #On remmet le joueur la ou il etait si il est sur une zone de collisions
-            self.detecte_collision()
             self.detecte_teleportation()
+            self.detecte_collision()
 
             #On actualise la position du joueur
             self.map.calques.center(self.joueur.rect)   #On centre la fenetre de jeu autour du joueur
@@ -217,9 +202,3 @@ class Jeux:
 
 
         pygame.quit()
-
-
-def cle(dict, valeur):
-    for cle,val in dict.items():
-        if val == valeur:
-            return cle

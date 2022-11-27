@@ -9,7 +9,9 @@ class Teleportation():
                 "map" : {"monde_arr": "map.tmx", "pos_arr": "départ_joueur"}
             },
             "map.tmx" : {
-                "maison_1" : {"monde_arr": "map_losange.tmx", "pos_arr": "depuis_map"}
+                "maison_1" : {"monde_arr": "map_losange.tmx", "pos_arr": "depuis_map"},
+                "maison_2" : {"monde_arr": "map_losange.tmx", "pos_arr": "depuis_map"},
+                "maison_3" : {"monde_arr": "map_losange.tmx", "pos_arr": "depuis_map"}
             },
             "map_losange.tmx" : {
                 "map" : {"monde_arr": "map.tmx", "pos_arr": "depuis_losange"}
