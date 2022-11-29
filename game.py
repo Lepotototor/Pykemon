@@ -1,6 +1,7 @@
-import pygame , sys
+import pygame
 import pytmx
 import pyscroll
+import sys
 
 from button import Button
 from joueur import Joueur
@@ -16,7 +17,7 @@ class Jeux:
 
     def __init__(self):
         #constructeur
-        self.fenetre = pygame.display.set_mode((1000, 700))   #On defini la fenetre
+        self.fenetre = pygame.display.set_mode((1280, 720))   #On defini la fenetre
         pygame.display.set_caption("Pykemon")   #Avec son titre
 
         # Variable de boucle
@@ -56,9 +57,9 @@ class Jeux:
         pressé=pygame.key.get_pressed()
 
         if pressé[pygame.K_LCTRL] :
-            self.joueur.vitesse=0.3
-        else:
             self.joueur.vitesse=0.2
+        else:
+            self.joueur.vitesse=0.15
 
         if pressé[pygame.K_UP]:
             self.joueur.haut()
@@ -92,7 +93,7 @@ class Jeux:
         """
         map_name = self.map.get_map_name()
 
-        sprite = self.map.calques.sprites()[0]
+        sprite = self.map.get_calques().sprites()[0]
         tp_map = self.teleportations[map_name]
 
         for point_tp in tp_map.keys():
@@ -103,19 +104,19 @@ class Jeux:
                 self.changement_map(self.teleportations[map_name][point_tp])
 
 
-    def changement_map(self, portail):
+    def changement_map(self, point_tp):
         #On charge les données utiles
-        nv_monde = portail["monde_arr"]
-        pos_joueur = portail["pos_arr"]
+        nv_monde = point_tp["monde_arr"]
+        pos_joueur = point_tp["pos_arr"]
 
         #On charge la map et ses données relatives
-        self.map = Map(nv_monde, 12, self.fenetre)
+        self.map = Map(nv_monde, 8, self.fenetre)
         self.collisions = self.map.charger_collisions()
 
         #On charge les données du joueur
         position_joueur = self.map.maptmx.get_object_by_name(pos_joueur)
         self.joueur = Joueur([position_joueur.x, position_joueur.y])
-        self.map.calques.add(self.joueur)
+        self.map.ajouter_joueur(self.joueur)
 
 
 

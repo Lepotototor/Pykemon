@@ -4,7 +4,7 @@ import pyscroll
 
 class Map:
 
-    def __init__(self, chemin, layer, fenetre, zoom=4):
+    def __init__(self, chemin, layer, fenetre, zoom=5):
 
         self.layer = layer
         self.chemin = chemin
@@ -26,6 +26,12 @@ class Map:
 
     def get_map(self):
         return self.maptmx
+
+    def get_calques(self):
+        return self.calques
+
+    def ajouter_joueur(self, joueur):
+        self.calques.add(joueur)
 
 
     def charger_collisions(self):
