@@ -14,50 +14,54 @@ class Joueur(pygame.sprite.Sprite):
         self.position = position     #position ou charger le joueur
         self.bas_du_joueur = pygame.Rect(0, 0, self.rect.width/2, 5)      #Variable qui sert de point de repere pour les collisions,
                                                 #donne l'impression de 3D et evite de bloquer si c'est la tete du joueur qui est en contact avec un obstacle
-        self.ancienne_position = self.position.copy()
-        self.directions = self.charger_directions()
+        self.ancienne_position = self.position_avant()       #On sauvegarde la position
+        self.directions = self.charger_directions()        #On charge le dictionnaire des directions
         self.ancienne_direction = None
         self.compteur = 0
-        self.frame = 0
+        self.frame = 0          #Permet d'avoir une animation plus épurée et évite l'impression de semi-marathon
 
 
 
     def droite(self):
         self.position[0] += self.vitesse
-        print(self.vitesse)
         self.animation("droite")
 
     def gauche(self):
         self.position[0] -= self.vitesse
-        print(self.vitesse)
         self.animation("gauche")
 
     def haut(self):
         self.position[1] -= self.vitesse
-        print(self.vitesse)
         self.animation("haut")
 
     def bas(self):
         self.position[1] += self.vitesse
-        print(self.vitesse)
         self.animation("bas")
 
 
 
     def animation(self, direction):
         self.frame += 1
+        #Permet justement de changer l'animation moins souvent
         if self.frame == 40:
             if direction == self.ancienne_direction:
+                #Si le joueur continue dans la même direction on fait avancer l'animation
                 self.compteur += 1
+                #Permet de naviguer entre les différentes positions
                 if (self.compteur > 3):
                     self.compteur = 0
             else:
                 self.compteur = 0
             self.frame = 0
+        #On applique le changement d'image
         self.image = self.get_image(self.directions[direction][self.compteur])
         self.ancienne_direction = direction
 
     def charger_directions(self):
+        """
+        Permet juste de créer un dictionnaire avec la position de chaque rectangle de
+        chaque position du Joueur
+        """
         dico_positions = {}
         dico_positions["bas"] = [(x,0) for x in range(4)]
         dico_positions["gauche"] = [(x,1) for x in range(4)]
@@ -66,14 +70,8 @@ class Joueur(pygame.sprite.Sprite):
         return dico_positions
 
 
-    def charger_cote(self, y):
-        liste = []
-        for x in range(4):
-            liste.append((x, y))
-        return liste
-
-
     def position_avant(self):
+        """Enregistre la position actuelle du joueur"""
         self.ancienne_position = self.position.copy()
 
 
@@ -85,6 +83,7 @@ class Joueur(pygame.sprite.Sprite):
 
 
     def retour_arrriere(self):
+        """Remet le joueur à son ancienne position """
         self.position = self.ancienne_position
         self.update()
 

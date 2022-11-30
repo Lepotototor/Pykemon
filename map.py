@@ -12,7 +12,7 @@ class Map:
         self.zoom = zoom
 
         #Permet de charger la carte
-        self.maptmx = pytmx.util_pygame.load_pygame(self.chemin)   #On va chercher le fichier
+        self.maptmx = pytmx.util_pygame.load_pygame(f"Map/{self.chemin}")   #On va chercher le fichier
         self.mapdata = pyscroll.data.TiledMapData(self.maptmx)
         self.maplayer = pyscroll.orthographic.BufferedRenderer(self.mapdata, self.fenetre.get_size())
         self.maplayer.zoom = self.zoom   #On defini un zoom

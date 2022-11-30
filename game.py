@@ -3,7 +3,6 @@ import pytmx
 import pyscroll
 import sys
 
-from button import Button
 from joueur import Joueur
 from map import Map
 from teleportation import Teleportation
@@ -17,6 +16,7 @@ class Jeux:
 
     def __init__(self):
         #constructeur
+
         self.fenetre = pygame.display.set_mode((1280, 720))   #On defini la fenetre
         pygame.display.set_caption("Pykemon")   #Avec son titre
 
@@ -57,7 +57,7 @@ class Jeux:
         pressé=pygame.key.get_pressed()
 
         if pressé[pygame.K_LCTRL] :
-            self.joueur.vitesse=0.2
+            self.joueur.vitesse=0.25
         else:
             self.joueur.vitesse=0.15
 
@@ -81,7 +81,7 @@ class Jeux:
         """
 
         sprite = self.map.calques.sprites()[0]
-        #print(sprite.bas_du_joueur.collidelist(self.collisions))
+        #On verifie si la zonedu bas du joueur entre en collision avec un rectangle de collision
         if sprite.bas_du_joueur.collidelist(self.collisions) != -1:
             sprite.retour_arrriere()
 
@@ -99,13 +99,17 @@ class Jeux:
         for point_tp in tp_map.keys():
             objet = self.map.get_map().get_object_by_name(point_tp)
             teleport = [pygame.Rect(objet.x, objet.y, objet.width, objet.height)]
+            #Pour chaque zone de teleportation de la map
+            #On verifie si le joueur y est en contact
 
             if sprite.bas_du_joueur.collidelist(teleport) != -1:
                 self.changement_map(self.teleportations[map_name][point_tp])
+                #On change de map en allant interroger la 'bas de données'
+                break
 
 
     def changement_map(self, point_tp):
-        #On charge les données utiles
+        #On charge les données utiles au nouvel emplacement du joueur
         nv_monde = point_tp["monde_arr"]
         pos_joueur = point_tp["pos_arr"]
 
@@ -117,7 +121,7 @@ class Jeux:
         position_joueur = self.map.maptmx.get_object_by_name(pos_joueur)
         self.joueur = Joueur([position_joueur.x, position_joueur.y])
         self.map.ajouter_joueur(self.joueur)
-        
+
 
     def run(self):
 
@@ -138,7 +142,7 @@ class Jeux:
             self.entrees_clavier()
 
             #On met a jour les calques de la map
-            self.map.calques.update()
+            self.map.get_calques().update()
 
             #On remmet le joueur la ou il etait si il est sur une zone de collisions
             self.detecte_teleportation()
