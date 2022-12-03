@@ -2,6 +2,8 @@ import pygame
 import pytmx
 import pyscroll
 import sys
+import random
+import csv
 
 from joueur import Joueur
 from map import Map
@@ -24,9 +26,11 @@ class Jeux:
         self.jeu_encours = True
 
         #On importe tous les points de téléportation
-        self.teleportations = Teleportation().get_dico_tp()
+        self.teleportations, self.infos_maps = Teleportation().get_dicos()
 
         self.changement_map(self.teleportations["start"]["map"])
+
+        self.sauvergarde_position = self.joueur.get_position().copy()
 
 
 
@@ -57,9 +61,9 @@ class Jeux:
         pressé=pygame.key.get_pressed()
 
         if pressé[pygame.K_LCTRL] :
-            self.joueur.vitesse=0.25
+            self.joueur.vitesse=0.5
         else:
-            self.joueur.vitesse=0.15
+            self.joueur.vitesse=0.25
 
         if pressé[pygame.K_UP]:
             self.joueur.haut()
@@ -70,7 +74,40 @@ class Jeux:
         elif pressé[pygame.K_RIGHT]:
             self.joueur.droite()
 
+        elif (pressé[pygame.K_RETURN]) and (self.joueur.get_position() != self.sauvergarde_position):
+            self.sauvergarde()
+            print("sauvergardé")
+        elif (pressé[pygame.K_r]) and (self.joueur.get_position() != self.sauvergarde_position):
+            self.restaure()
+            print("restauré")
+
+
         self.joueur.image.set_colorkey((0, 0, 0))    #On enleve le fond noir de l'image
+
+    def sauvergarde(self):
+        self.sauvergarde_position = self.joueur.get_position().copy()
+        with open('.sauvergarde.csv','w',newline='') as fichiercsv:
+            writer=csv.writer(fichiercsv)
+            writer.writerow([self.map.get_map_name(), self.sauvergarde_position[0], self.sauvergarde_position[1]])
+
+    def restaure(self):
+        file = open(r".sauvergarde.csv")
+        reader_file = csv.reader(file)
+        for row in reader_file:
+            nv_map = row[0]
+            nv_position = [ float(row[1]), float(row[2]) ]
+            print(type(nv_position))
+            print(nv_map, nv_position)
+
+        #On charge la map et ses données relatives
+        self.map = Map(nv_map, self.infos_maps[nv_map]["layer"], self.fenetre, self.infos_maps[nv_map]["zoom"])
+        self.collisions = self.map.charger_collisions()
+        self.hautes_herbes = self.map.charger_hautes_herbes()
+
+        #On charge les données du joueur
+        self.joueur = Joueur(nv_position)
+        self.map.ajouter_joueur(self.joueur)
+
 
 
     def detecte_collision(self):
@@ -80,10 +117,25 @@ class Jeux:
         il n'etait pas sur une collision
         """
 
-        sprite = self.map.calques.sprites()[0]
+        sprite = self.map.get_calques().sprites()[0]
         #On verifie si la zonedu bas du joueur entre en collision avec un rectangle de collision
         if sprite.bas_du_joueur.collidelist(self.collisions) != -1:
             sprite.retour_arrriere()
+
+    def detecte_combat(self):
+        """
+        fontion ou l'on detecte les collisions, on met aussi a jour l'affichage
+        si le joueur est sur une zone de collision on le remet a une position ou
+        il n'etait pas sur une collision
+        """
+
+        sprite = self.map.get_calques().sprites()[0]
+        #print(self.hautes_herbes)
+        #On verifie si la zonedu bas du joueur entre en collision avec un rectangle de collision
+        if (self.joueur.get_position() != self.joueur.get_ancienne_position()) and (sprite.bas_du_joueur.collidelist(self.hautes_herbes) != -1):
+            #print("possible")
+            if (random.randint(0, 300) == 0):
+                print("COMBAT !!")
 
 
 
@@ -114,8 +166,9 @@ class Jeux:
         pos_joueur = point_tp["pos_arr"]
 
         #On charge la map et ses données relatives
-        self.map = Map(nv_monde, 8, self.fenetre)
+        self.map = Map(nv_monde, self.infos_maps[nv_monde]["layer"], self.fenetre, self.infos_maps[nv_monde]["zoom"])
         self.collisions = self.map.charger_collisions()
+        self.hautes_herbes = self.map.charger_hautes_herbes()
 
         #On charge les données du joueur
         position_joueur = self.map.maptmx.get_object_by_name(pos_joueur)
@@ -147,6 +200,7 @@ class Jeux:
             #On remmet le joueur la ou il etait si il est sur une zone de collisions
             self.detecte_teleportation()
             self.detecte_collision()
+            self.detecte_combat()
 
             #On actualise la position du joueur
             self.map.calques.center(self.joueur.rect)   #On centre la fenetre de jeu autour du joueur

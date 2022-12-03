@@ -4,7 +4,7 @@ import pyscroll
 
 class Map:
 
-    def __init__(self, chemin, layer, fenetre, zoom=5):
+    def __init__(self, chemin, layer, fenetre, zoom):
 
         self.layer = layer
         self.chemin = chemin
@@ -42,3 +42,12 @@ class Map:
                 self.collisions.append(pygame.Rect(objet.x, objet.y, objet.width, objet.height))
 
         return self.collisions
+
+    def charger_hautes_herbes(self):
+        #On importe les zones de collision
+        self.hautes_herbes = []
+        for objet in self.maptmx.objects:
+            if objet.name == "hautes_herbes":
+                self.hautes_herbes.append(pygame.Rect(objet.x, objet.y, objet.width, objet.height))
+
+        return self.hautes_herbes

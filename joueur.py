@@ -21,6 +21,15 @@ class Joueur(pygame.sprite.Sprite):
         self.frame = 0          #Permet d'avoir une animation plus épurée et évite l'impression de semi-marathon
 
 
+    def get_position(self):
+        return self.position
+
+    def get_ancienne_position(self):
+        return self.ancienne_position
+
+    def set_position(self, nv_position):
+        self.position = nv_position.copy()
+
 
     def droite(self):
         self.position[0] += self.vitesse
